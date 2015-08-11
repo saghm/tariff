@@ -17,12 +17,17 @@ pub struct ImportExportClient {
 impl ImportExportClient {
     /// Create a new client for importing/exporting MongoDB data
     ///
+    /// # Arguments
+    ///
+    /// `host` - The host to connect to.
+    /// `port` - The port to connect to.
+    ///
     /// # Return value
     ///
     /// Returns a new client if the client successfully connects to the database,
     /// or an error string on failure.
-    pub fn new<'a>() -> Result<Self, &'a str> {
-        match Client::connect("localhost", 27017) {
+    pub fn new<'a>(host: &str, port: u16) -> Result<Self, &'a str> {
+        match Client::connect(host, port) {
             Ok(client) => Ok(ImportExportClient { client: client }),
             Err(_) => Err("Unable to connect to database.")
         }

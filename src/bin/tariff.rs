@@ -1,13 +1,8 @@
-extern crate bson;
 extern crate docopt;
-extern crate mongodb;
-extern crate rustc_serialize;
-
-#[macro_use] mod version;
-mod client;
+extern crate tariff;
 
 use docopt::Docopt;
-use client::ImportExportClient;
+use tariff::client::ImportExportClient;
 
 static USAGE : &'static str = "
 USAGE: tariff (-e | -i) <file> --db <db> --coll <coll>
@@ -24,6 +19,16 @@ Options:
   -h, --help         Show this message.
   -v, --version      Show the version of tariff.
 ";
+
+macro_rules! version {
+    () => {
+        format!("{}.{}.{}{}",
+            env!("CARGO_PKG_VERSION_MAJOR"),
+            env!("CARGO_PKG_VERSION_MINOR"),
+            env!("CARGO_PKG_VERSION_PATCH"),
+            option_env!("CARGO_PKG_VERSION_PRE").unwrap_or(""))
+    }
+}
 
 fn main() {
   let argv = std::env::args();

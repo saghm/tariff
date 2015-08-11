@@ -196,7 +196,7 @@ impl ImportExportClient {
         };
 
         for chunk in docs.chunks(chunk_size) {
-            match coll.insert_many(chunk.to_owned(), false, None) {
+            match coll.insert_many(chunk.to_owned(), None) {
                 Ok(_) => (),
                 Err(e) => {
                     println!("{}", e.description());

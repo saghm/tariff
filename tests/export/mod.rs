@@ -1,9 +1,9 @@
 use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
 
-use rustc_serialize::json::Json;
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
+use rustc_serialize::json::Json;
 use tariff::client::ImportExportClient;
 
 #[test]
@@ -12,7 +12,7 @@ fn export_collection() {
     let coll_name = "export_collection";
     let output_file = format!("{}.{}.tmp", db_name, coll_name);
 
-    let client = Client::connect("localhost", 27017).unwrap();
+    let client = Client::connect("localhost", 27017).ok().expect("Unable to connect to database to input test data");
     let db = client.db(db_name);
     db.drop_database().ok().expect("Unable to drop database in preparation for tests");
     let coll = db.collection(coll_name);
@@ -65,7 +65,7 @@ fn export_all() {
     let len = coll_names.len();
     let output_file = format!("{}.export_all.tmp", db_name);
 
-    let client = Client::connect("localhost", 27017).unwrap();
+    let client = Client::connect("localhost", 27017).ok().expect("Unable to connect to database to input sample data");
     let db = client.db(db_name);
     db.drop_database().ok().expect("Unable to drop database in preparation for tests");
 
@@ -116,6 +116,6 @@ fn export_all() {
             };
         }
     }
-    
+
     let _ = fs::remove_file(&output_file);
 }

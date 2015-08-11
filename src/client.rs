@@ -15,6 +15,12 @@ pub struct ImportExportClient {
 }
 
 impl ImportExportClient {
+    /// Create a new client for importing/exporting MongoDB data
+    ///
+    /// # Return value
+    ///
+    /// Returns a new client if the client successfully connects to the database,
+    /// or an error string on failure.
     pub fn new<'a>() -> Result<Self, &'a str> {
         match Client::connect("localhost", 27017) {
             Ok(client) => Ok(ImportExportClient { client: client }),
@@ -22,6 +28,17 @@ impl ImportExportClient {
         }
     }
 
+    /// Export a collection in the database to a JSON file.
+    ///
+    /// # Arguments
+    ///
+    /// `db_name` - The name of the database to export from.
+    /// `coll_name` - The name of the collection to export.
+    /// `out` - The name of the file to store the outputted data.
+    ///
+    /// # Return value
+    ///
+    /// Returns nothing on success, or an error string on failure.
     pub fn export_collection(&mut self, db_name: &str, coll_name: &str, out: &str) -> Result<(), &str> {
         let mut out = match OpenOptions::new().write(true).create(true).truncate(true).open(out) {
             Ok(file) => file,
@@ -47,6 +64,16 @@ impl ImportExportClient {
         Ok(())
     }
 
+    /// Export all collections in the database to a JSON file.
+    ///
+    /// # Arguments
+    ///
+    /// `db_name` - The name of the database to export.
+    /// `out` - The name of the file to store the outputted data.
+    ///
+    /// # Return value
+    ///
+    /// Returns nothing on success, or an error string on failure.
     pub fn export_all(&self, db_name: &str, out: &str) -> Result<(), &str> {
         let colls = try!(self.get_collection_names(db_name));
         let mut object = Object::new();
@@ -113,6 +140,17 @@ impl ImportExportClient {
         }
     }
 
+    /// Import a collection to the database from a JSON file.
+    ///
+    /// # Arguments
+    ///
+    /// `db_name` - The name of the database to import into.
+    /// `coll_name` - The name of the collection to import into.
+    /// `input` - The name of the file containing the data to import.
+    ///
+    /// # Return value
+    ///
+    /// Returns nothing on success, or an error string on failure.
     pub fn import_all(&self, db_name: &str, input: &str) -> Result<(), &str> {
         let mut file = match File::open(input) {
             Ok(file) => file,
@@ -154,7 +192,17 @@ impl ImportExportClient {
         Ok(())
     }
 
-    pub fn import_collection(&self, db_name: &str, coll_name: &str, input: &str) -> Result<(), &str>{
+    /// Import a set of collections to the database from a JSON file.
+    ///
+    /// # Arguments
+    ///
+    /// `db_name` - The name of the database to import into.
+    /// `input` - The name of the file containing the data to import.
+    ///
+    /// # Return value
+    ///
+    /// Returns nothing on success, or an error string on failure.
+    pub fn import_collection(&self, db_name: &str, coll_name: &str, input: &str) -> Result<(), &str> {
         let file = match File::open(input) {
             Ok(file) => file,
             Err(_) => return Err("Unable to open file")

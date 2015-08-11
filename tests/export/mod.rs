@@ -72,7 +72,7 @@ fn export_all() {
     for (i, coll_name) in coll_names.iter().enumerate() {
         let docs = (1..5).map(|j| {
             let id = (i * len + j) as i32;
-            doc! { "_id" => id, "x" => (11 * id as i32) }
+            doc! { "_id" => id, "x" => (11 * id) }
         }).collect();
 
         let coll = db.collection(coll_name);

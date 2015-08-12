@@ -7,7 +7,7 @@ use docopt::Docopt;
 use tariff::client::ImportExportClient;
 
 static USAGE : &'static str = "
-USAGE: tariff (-e | -i) <file> --db <db> --coll <coll> [--port <port>]
+USAGE: tariff (-e | -i) <file> --db <db> --coll <coll> [--port <port> | --secondary]
        tariff (-x | -m) <file> --db <db> [--port <port>]
        tariff (--help | --version)
 
@@ -19,6 +19,7 @@ Options:
   -x, --export-all   Exports all collection in database to file.
   -m, --import-all   Imports multiple collections from file.
   -p, --port         Which port to connect to the database on.
+  -s, --secondary    Whether or not to prefer reading from a secondary.
   -h, --help         Show this message.
   -v, --version      Show the version of tariff.
 ";
@@ -44,7 +45,9 @@ fn main() {
 
   let file = args.get_str("<file>");
   let port = u16::from_str(args.get_str("<port>")).unwrap_or(27017);
-  let mut client = match ImportExportClient::new("localhost", port) {
+  let secondary = args.get_bool("--secondary");
+
+  let mut client = match ImportExportClient::new("localhost", port, secondary) {
       Ok(client) => client,
       Err(e) => panic!("Error: {}", e)
   };

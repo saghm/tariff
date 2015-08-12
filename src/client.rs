@@ -5,7 +5,8 @@ use std::io::{BufRead, BufReader, Write};
 use std::error::Error;
 
 use bson::{Bson, Document};
-use mongodb::{Client, ThreadedClient};
+use mongodb::{Client, ClientOptions, ThreadedClient};
+use mongodb::common::{ReadMode, ReadPreference};
 use mongodb::cursor::Cursor;
 use mongodb::db::ThreadedDatabase;
 use rustc_serialize::json::{Json, Object};
@@ -26,8 +27,19 @@ impl ImportExportClient {
     ///
     /// Returns a new client if the client successfully connects to the database,
     /// or an error string on failure.
-    pub fn new<'a>(host: &str, port: u16) -> Result<Self, &'a str> {
-        match Client::connect(host, port) {
+    pub fn new<'a>(host: &str, port: u16, secondary: bool) -> Result<Self, &'a str> {
+        let client_result = if secondary {
+            let mut options = ClientOptions::new();
+            let preference = ReadPreference::new(ReadMode::Secondary, None);
+            options.read_preference = Some(preference);
+            let uri = format!("mongodb://{}:{}", host, port);
+            println!("Trying to connect to secondary...");
+            Client::with_uri_and_options(&uri, options)
+        } else {
+            Client::connect(host, port)
+        };
+
+        match client_result {
             Ok(client) => Ok(ImportExportClient { client: client }),
             Err(_) => Err("Unable to connect to database.")
         }

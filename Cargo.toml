@@ -2,7 +2,10 @@
 name = "tariff"
 version = "0.1.0"
 authors = ["Saghm Rossi <saghmrossi@gmail.com>"]
+repository = "https://github.com/saghm/tariff"
+description = "A MongoDB import/export tool written in Rust as a proof-of-concept for the experimental Rust driver."
 license = "MIT"
+keywords = ["mongo", "mongodb", "import", "export", "json"]
 
 [dependencies]
 bson = "0.1.3"

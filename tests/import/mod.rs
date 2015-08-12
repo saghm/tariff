@@ -28,7 +28,7 @@ fn import_collection() {
         writeln!(file, "{}", Json::Object(obj)).ok().expect("Unable to write test data to file");
     }
 
-    let tariff = ImportExportClient::new("localhost", 27017).unwrap();
+    let tariff = ImportExportClient::new("localhost", 27017, false).unwrap();
     tariff.import_collection(db_name, coll_name, &input_file).unwrap();
     let _ = fs::remove_file(input_file);
 
@@ -94,7 +94,7 @@ fn import_all() {
 
     writeln!(file, "{}", Json::Object(data)).ok().expect("Unable to write test data to file");
 
-    let tariff = ImportExportClient::new("localhost", 27017).unwrap();
+    let tariff = ImportExportClient::new("localhost", 27017, false).unwrap();
     tariff.import_all(db_name, &input_file).unwrap();
     let _ = fs::remove_file(input_file);
 

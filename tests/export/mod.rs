@@ -20,7 +20,7 @@ fn export_collection() {
     let docs = (1..5).map(|i| doc! { "_id" => i, "x" => (i * 11) }).collect();
     coll.insert_many(docs, None).ok().expect("Unable to insert documents into collection for testing");
 
-    let mut tariff = ImportExportClient::new("localhost", 27017).ok().unwrap();
+    let mut tariff = ImportExportClient::new("localhost", 27017, false).ok().unwrap();
     tariff.export_collection(db_name, coll_name, &output_file).unwrap();
 
     let file = File::open(&output_file).ok().expect("Unable to open generated output file");
@@ -79,7 +79,7 @@ fn export_all() {
         coll.insert_many(docs, None).ok().expect("Unable to insert documents into collection for testing");
     }
 
-    let tariff = ImportExportClient::new("localhost", 27017).ok().unwrap();
+    let tariff = ImportExportClient::new("localhost", 27017, false).ok().unwrap();
     tariff.export_all(db_name, &output_file).unwrap();
 
     let mut file = File::open(&output_file).ok().expect("Unable to open generated output file");

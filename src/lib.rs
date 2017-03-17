@@ -1,6 +1,4 @@
 extern crate bson;
-extern crate docopt;
+extern crate hex;
 extern crate mongodb;
-extern crate rustc_serialize;
-
-pub mod client;
+extern crate serde_yaml;

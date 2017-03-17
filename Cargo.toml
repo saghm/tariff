@@ -1,14 +1,17 @@
 [package]
-name = "tariff"
-version = "0.1.0"
 authors = ["Saghm Rossi <saghmrossi@gmail.com>"]
-repository = "https://github.com/saghm/tariff"
-description = "A MongoDB import/export tool written in Rust as a proof-of-concept for the experimental Rust driver."
-license = "MIT"
+description = "A MongoDB import/export tool"
 keywords = ["mongo", "mongodb", "import", "export", "json"]
+license = "MIT"
+name = "tariff"
+repository = "https://github.com/saghm/tariff"
+version = "0.2.0"
+
+[[bin]]
+name = "tariff"
 
 [dependencies]
-bson = "0.1.3"
-docopt = "0.6.70"
-mongodb = "0.1.0"
-rustc-serialize = "0.3.15"
+bson = "0.6.0"
+hex = "0.2.0"
+mongodb = "0.2.3"
+serde_yaml = "0.6.2"

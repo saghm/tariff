@@ -4,77 +4,6 @@ use chrono::{DateTime, UTC};
 use hex::ToHex;
 use serde_yaml::{Mapping, Value};
 
-macro_rules! yaml_string {
-    ($string:expr) => (Value::String($string.to_string()))
-}
-
-fn convert_javascript_code(value: Value) -> Result<Value, Bson> {
-    match value {
-        Value::String(s) => Err(Bson::JavaScriptCode(s)),
-        other => Ok(other),
-    }
-}
-
-fn convert_timestamp(value: Value) -> Result<Value, Bson> {
-    let mapping = match value {
-        Value::Mapping(m) => m,
-        other => return Ok(other),
-    };
-
-    if mapping.len() != 2 {
-        return Ok(Value::Mapping(mapping));
-    }
-
-    let t = match mapping.get(&yaml_string!("t")) {
-        Some(&Value::I64(i)) => i,
-        _ => return Ok(Value::Mapping(mapping)),
-    };
-
-    let v = match mapping.get(&yaml_string!("v")) {
-        Some(&Value::I64(i)) => i,
-        _ => return Ok(Value::Mapping(mapping)),
-    };
-
-    let timestamp = (t << 32) | v;
-    Err(Bson::TimeStamp(timestamp))
-}
-
-fn convert_oid(value: Value) -> Result<Value, Bson> {
-    let oid_string = match value {
-        Value::String(s) => s,
-        other => return Ok(other),
-    };
-
-    match ObjectId::with_string(&oid_string) {
-        Ok(oid) => Err(Bson::ObjectId(oid)),
-        Err(_) => Ok(Value::String(oid_string)),
-    }
-}
-
-fn convert_datetime(value: Value) -> Result<Value, Bson> {
-    let datetime_string = match value {
-        Value::String(s) => s,
-        other => return Ok(other),
-    };
-
-    match DateTime::parse_from_rfc3339(&datetime_string) {
-        Ok(datetime) => Err(Bson::UtcDatetime(datetime.with_timezone(&UTC))),
-        Err(_) => Ok(Value::String(datetime_string)),
-    }
-}
-
-pub fn yaml_to_bson(yaml: Value) -> Bson {
-    match yaml {
-        Value::Null => Bson::Null,
-        Value::Bool(b) => Bson::Boolean(b),
-        Value::I64(i) => Bson::I64(i),
-        Value::F64(f) => Bson::FloatingPoint(f),
-        Value::String(s) => Bson::String(s),
-        Value::Sequence(sequence) => Bson::Array(sequence.into_iter().map(yaml_to_bson).collect()),
-        _ => unimplemented!(),
-    }
-}
-
 pub fn bson_document_to_yaml(document: Document) -> Value {
     Value::Mapping(document.into_iter()
                        .map(|(k, v)| (Value::String(k), bson_to_yaml(v)))
@@ -148,4 +77,3 @@ pub fn bson_to_yaml(bson: Bson) -> Value {
         Bson::Symbol(_) => unimplemented!(),
     }
 }
-
